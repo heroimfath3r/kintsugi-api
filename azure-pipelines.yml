@@ -23,8 +23,9 @@ steps:
   # ============================================
   - script: |
       echo "=== Análisis de dependencias (SCA) ==="
-      npm audit --audit-level=high || echo "Se encontraron vulnerabilidades. Revisar reporte."
+      npm audit --audit-level=high
     displayName: 'Análisis de dependencias - npm audit (SCA)'
+    continueOnError: true
 
   # ============================================
   # FASE B: Análisis de Seguridad Estático (SAST)
@@ -32,7 +33,7 @@ steps:
   # ============================================
   - script: |
       echo "=== Análisis de seguridad estático (SAST) ==="
-      npx njsscan --exit-warning . || echo "Análisis SAST completado"
+      npx eslint@latest --no-eslintrc --rule "{no-eval: error, no-implied-eval: error, no-new-func: error}" src/**/*.js --format compact || echo "Análisis SAST completado con advertencias"
     displayName: 'Análisis de seguridad estático (SAST)'
     continueOnError: true
 
@@ -41,6 +42,7 @@ steps:
   # Ejecuta tests unitarios con Jest
   # ============================================
   - script: |
+      set NODE_ENV=test
       npm test
     displayName: 'Ejecutar pruebas unitarias'
 

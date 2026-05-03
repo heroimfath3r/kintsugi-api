@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="3" failures="0" errors="0" time="1.517">
-  <testsuite name="API Health Check" errors="0" failures="0" skipped="0" timestamp="2026-05-03T20:26:57" time="1.448" tests="3">
-    <testcase classname="API Health Check GET /api/health debe responder con status ok" name="API Health Check GET /api/health debe responder con status ok" time="0.072">
+<testsuites name="jest tests" tests="3" failures="0" errors="0" time="0.912">
+  <testsuite name="API Health Check" errors="0" failures="0" skipped="0" timestamp="2026-05-03T21:28:15" time="0.848" tests="3">
+    <testcase classname="API Health Check GET /api/health debe responder con status ok" name="API Health Check GET /api/health debe responder con status ok" time="0.085">
     </testcase>
-    <testcase classname="Rutas no encontradas GET /ruta/inexistente debe responder con 404" name="Rutas no encontradas GET /ruta/inexistente debe responder con 404" time="0.009">
+    <testcase classname="Rutas no encontradas GET /ruta/inexistente debe responder con 404" name="Rutas no encontradas GET /ruta/inexistente debe responder con 404" time="0.01">
     </testcase>
     <testcase classname="API responde JSON GET /api/health debe devolver content-type JSON" name="API responde JSON GET /api/health debe devolver content-type JSON" time="0.008">
     </testcase>
