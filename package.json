@@ -1,0 +1,24 @@
+{
+  "name": "kintsugi-api",
+  "version": "1.0.0",
+  "description": "API REST para Kintsugi - App de hábitos con arquetipos de anime",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heroimfath3r/kintsugi-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "firebase-admin": "^13.0.2"
+  }
+}

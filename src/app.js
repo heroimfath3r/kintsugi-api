@@ -1,0 +1,37 @@
+const express = require('express');
+const cors = require('cors');
+
+const authRoutes = require('./routes/auth.routes');
+const checkinRoutes = require('./routes/checkin.routes');
+const misionesRoutes = require('./routes/misiones.routes');
+const progresoRoutes = require('./routes/progreso.routes');
+
+const app = express();
+
+// Middleware global
+app.use(cors());
+app.use(express.json());
+
+// Ruta de salud — para verificar que la API está viva
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Kintsugi API funcionando' });
+});
+
+// Rutas
+app.use('/api/auth', authRoutes);
+app.use('/api/checkin', checkinRoutes);
+app.use('/api/misiones', misionesRoutes);
+app.use('/api/progreso', progresoRoutes);
+
+// Manejo de rutas no encontradas
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
+});
+
+// Manejo global de errores
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(500).json({ error: 'Error interno del servidor' });
+});
+
+module.exports = app;
