@@ -10,8 +10,8 @@ steps:
   # ============================================
   - task: NodeTool@0
     inputs:
-      versionSpec: '18.x'
-    displayName: 'Instalar Node.js 18.x'
+      versionSpec: '20.x'
+    displayName: 'Instalar Node.js 20.x'
 
   - script: |
       npm install
@@ -22,9 +22,9 @@ steps:
   # Escanea dependencias buscando vulnerabilidades CVE
   # ============================================
   - script: |
-      echo "=== Análisis de dependencias (SCA) ==="
+      echo === Analisis de dependencias SCA ===
       npm audit --audit-level=high
-    displayName: 'Análisis de dependencias - npm audit (SCA)'
+    displayName: 'Analisis de dependencias - npm audit (SCA)'
     continueOnError: true
 
   # ============================================
@@ -32,9 +32,15 @@ steps:
   # Detecta patrones de riesgo en el código fuente
   # ============================================
   - script: |
-      echo "=== Análisis de seguridad estático (SAST) ==="
-      npx eslint@latest --no-eslintrc --rule "{no-eval: error, no-implied-eval: error, no-new-func: error}" src/**/*.js --format compact || echo "Análisis SAST completado con advertencias"
-    displayName: 'Análisis de seguridad estático (SAST)'
+      echo === Analisis de seguridad estatico SAST ===
+      echo Buscando patrones de riesgo: eval, exec, innerHTML, SQL injection...
+      findstr /S /I /N "eval(" src\*.js && echo [ADVERTENCIA] Se encontro uso de eval || echo [OK] No se encontro eval
+      findstr /S /I /N "child_process" src\*.js && echo [ADVERTENCIA] Se encontro child_process || echo [OK] No se encontro child_process
+      findstr /S /I /N "innerHTML" src\*.js && echo [ADVERTENCIA] Se encontro innerHTML || echo [OK] No se encontro innerHTML
+      findstr /S /I /N "exec(" src\*.js && echo [ADVERTENCIA] Se encontro exec || echo [OK] No se encontro exec
+      findstr /S /I /N "SELECT.*FROM" src\*.js && echo [ADVERTENCIA] Posible SQL sin parametrizar || echo [OK] No se encontro SQL directo
+      echo === Analisis SAST completado ===
+    displayName: 'Analisis de seguridad estatico (SAST)'
     continueOnError: true
 
   # ============================================
