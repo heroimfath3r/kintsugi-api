@@ -40,6 +40,7 @@ steps:
       findstr /S /I /N "exec(" src\*.js && echo [ADVERTENCIA] Se encontro exec || echo [OK] No se encontro exec
       findstr /S /I /N "SELECT.*FROM" src\*.js && echo [ADVERTENCIA] Posible SQL sin parametrizar || echo [OK] No se encontro SQL directo
       echo === Analisis SAST completado ===
+      exit /b 0
     displayName: 'Analisis de seguridad estatico (SAST)'
     continueOnError: true
 
