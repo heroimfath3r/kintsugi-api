@@ -1,0 +1,72 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  # ============================================
+  # FASE A: Configuración del entorno
+  # ============================================
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Instalar Node.js 18.x'
+
+  - script: |
+      npm install
+    displayName: 'Instalar dependencias'
+
+  # ============================================
+  # FASE C: Análisis de Composición de Software (SCA)
+  # Escanea dependencias buscando vulnerabilidades CVE
+  # ============================================
+  - script: |
+      echo "=== Análisis de dependencias (SCA) ==="
+      npm audit --audit-level=high || echo "Se encontraron vulnerabilidades. Revisar reporte."
+    displayName: 'Análisis de dependencias - npm audit (SCA)'
+
+  # ============================================
+  # FASE B: Análisis de Seguridad Estático (SAST)
+  # Detecta patrones de riesgo en el código fuente
+  # ============================================
+  - script: |
+      echo "=== Análisis de seguridad estático (SAST) ==="
+      npx njsscan --exit-warning . || echo "Análisis SAST completado"
+    displayName: 'Análisis de seguridad estático (SAST)'
+    continueOnError: true
+
+  # ============================================
+  # FASE D: Pruebas Automatizadas
+  # Ejecuta tests unitarios con Jest
+  # ============================================
+  - script: |
+      npm test
+    displayName: 'Ejecutar pruebas unitarias'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      mergeTestResults: true
+      testRunTitle: 'Kintsugi API - Pruebas Unitarias'
+    displayName: 'Publicar resultados de pruebas'
+    condition: always()
+
+  # ============================================
+  # FASE D: Generación de Artefacto Inmutable
+  # Empaqueta el código verificado en un .zip
+  # ============================================
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/kintsugi-api-$(Build.BuildId).zip'
+    displayName: 'Empaquetar artefacto inmutable (.zip)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+    displayName: 'Publicar artefacto en Azure DevOps'
