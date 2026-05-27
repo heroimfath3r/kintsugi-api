@@ -8,6 +8,8 @@ const misionesRoutes = require('./routes/misiones.routes');
 const progresoRoutes = require('./routes/progreso.routes');
 
 const app = express();
+// Bug #47: Deshabilitar cabecera X-Powered-By para no revelar el framework
+app.disable('x-powered-by');
 
 // Rate limiting general — máximo 100 peticiones por IP cada 15 minutos
 const generalLimiter = rateLimit({
