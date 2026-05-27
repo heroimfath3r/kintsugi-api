@@ -30,7 +30,12 @@ const authLimiter = rateLimit({
 });
 
 // Middleware global
-app.use(cors());
+// Bug #45: Restringir CORS a orígenes específicos en lugar de aceptar cualquiera
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://localhost:8080'],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(generalLimiter);
 
