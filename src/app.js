@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const authRoutes = require('./routes/auth.routes');
 const checkinRoutes = require('./routes/checkin.routes');
@@ -8,9 +9,28 @@ const progresoRoutes = require('./routes/progreso.routes');
 
 const app = express();
 
+// Rate limiting general — máximo 100 peticiones por IP cada 15 minutos
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: 'Demasiadas peticiones, intenta de nuevo en 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Rate limiting estricto para auth — máximo 10 intentos por IP cada 15 minutos
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Demasiados intentos de autenticación, intenta de nuevo en 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware global
 app.use(cors());
 app.use(express.json());
+app.use(generalLimiter);
 
 // Ruta de salud — para verificar que la API está viva
 app.get('/api/health', (req, res) => {
@@ -18,7 +38,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Rutas
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/checkin', checkinRoutes);
 app.use('/api/misiones', misionesRoutes);
 app.use('/api/progreso', progresoRoutes);
