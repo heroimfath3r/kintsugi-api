@@ -1,3 +1,4 @@
+//C:\Proyectos\Kintsugi-api\src\models\progreso.model.js
 const { db } = require('../config/firebase');
 
 const getUserProgress = async (uid) => {
@@ -52,5 +53,12 @@ const getWeeklyMissions = async (uid) => {
     ...doc.data(),
   }));
 };
+const getCatalogoHitos = async () => {
+  const snapshot = await db
+    .collection('catalogo_hitos')
+    .orderBy('orden', 'asc')
+    .get();
 
-module.exports = { getUserProgress, getWeeklyCheckins, getWeeklyMissions };
+  return snapshot.docs.map((doc) => doc.data());
+};
+module.exports = { getUserProgress, getWeeklyCheckins, getWeeklyMissions, getCatalogoHitos };

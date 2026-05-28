@@ -1,3 +1,4 @@
+//C:\Proyectos\Kintsugi-api\src\services\progreso.service.js
 const progresoModel = require('../models/progreso.model');
 
 const obtenerProgreso = async (uid) => {
@@ -7,7 +8,17 @@ const obtenerProgreso = async (uid) => {
     throw { status: 404, message: 'Perfil no encontrado' };
   }
 
-  return progreso;
+  // HU-14: calcular estado de cada hito segun misiones completadas.
+  const catalogo = await progresoModel.getCatalogoHitos();
+  const hitos = catalogo.map((hito) => ({
+    ...hito,
+    desbloqueado: progreso.misionesCompletadas >= hito.misionesRequeridas,
+  }));
+
+  return {
+    ...progreso,
+    hitos,
+  };
 };
 
 const obtenerResumenSemanal = async (uid) => {
