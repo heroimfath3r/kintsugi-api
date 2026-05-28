@@ -8,6 +8,8 @@ const misionesRoutes = require('./routes/misiones.routes');
 const progresoRoutes = require('./routes/progreso.routes');
 
 const app = express();
+// Bug #47: Deshabilitar cabecera X-Powered-By para no revelar el framework
+app.disable('x-powered-by');
 
 // Rate limiting general — máximo 100 peticiones por IP cada 15 minutos
 const generalLimiter = rateLimit({
@@ -28,7 +30,12 @@ const authLimiter = rateLimit({
 });
 
 // Middleware global
-app.use(cors());
+// Bug #45: Restringir CORS a orígenes específicos en lugar de aceptar cualquiera
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://localhost:8080'],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(generalLimiter);
 
