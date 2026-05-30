@@ -3,23 +3,38 @@ const { db } = require('../config/firebase');
 const getUserProgress = async (uid) => {
   const doc = await db.collection('users').doc(uid).get();
   if (!doc.exists) return null;
-
   const data = doc.data();
   return {
     uid,
     arquetipo: data.arquetipo,
     xp: data.xp || 0,
+    xpTotal: data.xp || 0, // alias explícito para cálculos de fase
     fase: data.fase || 1,
     racha: data.racha || 0,
     misionesCompletadas: data.misionesCompletadas || 0,
   };
 };
 
+/**
+ * Lee el catálogo de hitos desde Firestore.
+ * Colección: catalogo_hitos, ordenada por campo "orden" asc.
+ */
+const getCatalogoHitos = async () => {
+  const snapshot = await db
+    .collection('catalogo_hitos')
+    .orderBy('orden', 'asc')
+    .get();
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
+
 const getWeeklyCheckins = async (uid) => {
   const hoy = new Date();
   const hace7dias = new Date(hoy);
   hace7dias.setDate(hoy.getDate() - 7);
-
   const snapshot = await db
     .collection('users')
     .doc(uid)
@@ -27,7 +42,6 @@ const getWeeklyCheckins = async (uid) => {
     .where('fecha', '>=', hace7dias.toISOString())
     .orderBy('fecha', 'desc')
     .get();
-
   return snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
@@ -38,7 +52,6 @@ const getWeeklyMissions = async (uid) => {
   const hoy = new Date();
   const hace7dias = new Date(hoy);
   hace7dias.setDate(hoy.getDate() - 7);
-
   const snapshot = await db
     .collection('users')
     .doc(uid)
@@ -46,11 +59,15 @@ const getWeeklyMissions = async (uid) => {
     .where('fecha', '>=', hace7dias.toISOString())
     .orderBy('fecha', 'desc')
     .get();
-
   return snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
 };
 
-module.exports = { getUserProgress, getWeeklyCheckins, getWeeklyMissions };
+module.exports = {
+  getUserProgress,
+  getCatalogoHitos,
+  getWeeklyCheckins,
+  getWeeklyMissions,
+};
