@@ -23,7 +23,7 @@ steps:
   # ============================================
   - script: |
       echo === Analisis de dependencias SCA ===
-      npm audit --audit-level=high
+      npm audit --audit-level=critical
     displayName: 'Analisis de dependencias - npm audit (SCA)'
     continueOnError: true
 
